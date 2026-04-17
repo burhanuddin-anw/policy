@@ -1,0 +1,35 @@
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Terraform provider binaries (too large for GitHub)
+.terraform/providers/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+*.temp
+
+# Azure CLI files
+.azure/
+
+# Terraform plan files
+terraform.tfplan
+terraform.tfplan.*
