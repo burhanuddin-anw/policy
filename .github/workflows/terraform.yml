@@ -47,7 +47,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: .
+        working-directory: rm1-policies
 
     outputs:
       tf_var_file: ${{ steps.tf_var.outputs.tf_var_file }}
@@ -124,7 +124,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: tf-plan
-          path: ./tfplan.out
+          path: rm1-policies/tfplan.out
 
   terraform-apply:
     needs: [terraform-plan]
@@ -134,7 +134,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: .
+        working-directory: rm1-policies
 
     steps:
       - name: Checkout
