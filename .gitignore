@@ -33,3 +33,10 @@ Thumbs.db
 # Terraform plan files
 terraform.tfplan
 terraform.tfplan.*
+
+# GitHub Actions artifacts
+tflint-*.sarif
+plan.txt
+
+# Local testing scripts
+scripts/local-*.sh

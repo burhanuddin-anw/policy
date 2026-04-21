@@ -9,6 +9,9 @@ variable "allowed_resource_types" {
   type        = list(string)
   default = [
     "Microsoft.Resources/subscriptions/resourceGroups",
+    "Microsoft.Authorization/policyDefinitions",
+    "Microsoft.Authorization/policySetDefinitions",
+    "Microsoft.Authorization/policyAssignments",
     "Microsoft.Storage/storageAccounts",
     "Microsoft.Network/virtualNetworks",
     "Microsoft.Network/networkSecurityGroups",
