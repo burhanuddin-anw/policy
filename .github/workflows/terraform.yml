@@ -79,7 +79,7 @@ jobs:
       - name: Terraform Init
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_BACKEND_CONTAINER: "terraform.tfstate"
+          ARM_BACKEND_CONTAINER: "terraform-tfstate"
           ARM_BACKEND_STORAGE_ACCOUNT: "strm1terraformstate"
           ARM_BACKEND_STORAGE_ACCOUNT_RG: "rg-rm1-terraform-state"
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -155,7 +155,7 @@ jobs:
       - name: Terraform Init
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_BACKEND_CONTAINER: "terraform.tfstate"
+          ARM_BACKEND_CONTAINER: "terraform-tfstate"
           ARM_BACKEND_STORAGE_ACCOUNT: "strm1terraformstate"
           ARM_BACKEND_STORAGE_ACCOUNT_RG: "rg-rm1-terraform-state"
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
