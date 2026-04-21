@@ -17,7 +17,7 @@ data "azurerm_subscription" "current" {}
 
 # Call the policy definitions module
 module "policy_definitions" {
-  source = "./modules/policy-definition"
+  source = "../modules/policy-definition"
 
   allowed_locations      = var.allowed_locations
   allowed_resource_types = var.allowed_resource_types
