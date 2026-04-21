@@ -23,6 +23,9 @@ module "policy_definitions" {
   allowed_resource_types = var.allowed_resource_types
   required_tags          = var.required_tags
   naming_prefixes        = var.naming_prefixes
+  allowed_vm_skus        = var.allowed_vm_skus
+  allowed_storage_skus   = var.allowed_storage_skus
+  high_cost_regions     = var.high_cost_regions
 }
 
 # Create the policy set definition (initiative)
@@ -67,6 +70,37 @@ resource "azurerm_policy_set_definition" "rm1_governance_initiative" {
     policy_definition_id = module.policy_definitions.tag_inheritance_policy_id
   }
 
+  policy_definition_reference {
+    policy_definition_id = module.policy_definitions.allowed_vm_skus_policy_id
+    parameter_values = jsonencode({
+      allowedVmSkus = {
+        value = "[parameters('allowedVmSkus')]"
+      }
+    })
+  }
+
+  policy_definition_reference {
+    policy_definition_id = module.policy_definitions.allowed_storage_skus_policy_id
+    parameter_values = jsonencode({
+      allowedStorageSkus = {
+        value = "[parameters('allowedStorageSkus')]"
+      }
+    })
+  }
+
+  policy_definition_reference {
+    policy_definition_id = module.policy_definitions.restrict_high_cost_regions_policy_id
+    parameter_values = jsonencode({
+      highCostRegions = {
+        value = "[parameters('highCostRegions')]"
+      }
+    })
+  }
+
+  policy_definition_reference {
+    policy_definition_id = module.policy_definitions.cost_allocation_tags_policy_id
+  }
+
   parameters = jsonencode({
     allowedLocations = {
       type = "Array"
@@ -93,6 +127,33 @@ resource "azurerm_policy_set_definition" "rm1_governance_initiative" {
         description = "The list of required tags for resources"
       }
       value = var.required_tags
+    }
+
+    allowedVmSkus = {
+      type = "Array"
+      metadata = {
+        displayName = "Allowed VM SKUs"
+        description = "The list of allowed VM SKUs to control costs"
+      }
+      value = var.allowed_vm_skus
+    }
+
+    allowedStorageSkus = {
+      type = "Array"
+      metadata = {
+        displayName = "Allowed Storage SKUs"
+        description = "The list of allowed storage account SKUs"
+      }
+      value = var.allowed_storage_skus
+    }
+
+    highCostRegions = {
+      type = "Array"
+      metadata = {
+        displayName = "High-Cost Regions to Restrict"
+        description = "The list of high-cost regions that should be restricted"
+      }
+      value = var.high_cost_regions
     }
   })
 }

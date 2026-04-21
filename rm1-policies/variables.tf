@@ -44,3 +44,39 @@ variable "naming_prefixes" {
   type        = list(string)
   default     = ["rg-rm1-", "vnet-rm1-", "aks-rm1-"]
 }
+
+variable "allowed_vm_skus" {
+  description = "List of allowed VM SKUs to control costs"
+  type        = list(string)
+  default = [
+    "Standard_B1s",
+    "Standard_B2s",
+    "Standard_B2ms",
+    "Standard_D2s_v3",
+    "Standard_D4s_v3",
+    "Standard_D8s_v3"
+  ]
+}
+
+variable "allowed_storage_skus" {
+  description = "List of allowed storage account SKUs"
+  type        = list(string)
+  default = [
+    "Standard_LRS",
+    "Standard_ZRS",
+    "Standard_GRS"
+  ]
+}
+
+variable "high_cost_regions" {
+  description = "List of high-cost regions to restrict"
+  type        = list(string)
+  default = [
+    "eastus2",
+    "westus2",
+    "westeurope",
+    "northeurope",
+    "japaneast",
+    "southeastasia"
+  ]
+}
