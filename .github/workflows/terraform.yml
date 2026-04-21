@@ -89,6 +89,7 @@ jobs:
             --account-name $ARM_BACKEND_STORAGE_ACCOUNT \
             --subscription $ARM_SUBSCRIPTION_ID \
             --name $ARM_BACKEND_CONTAINER \
+            --auth-mode login \
             --query exists)
           container_exists="${container_exists%\"}"
           container_exists="${container_exists#\"}"
@@ -96,7 +97,8 @@ jobs:
             az storage container create \
               --subscription "$ARM_SUBSCRIPTION_ID" \
               --name "$ARM_BACKEND_CONTAINER" \
-              --public-access off
+              --public-access off \
+              --auth-mode login
           fi
           terraform init \
             -backend-config="storage_account_name=$ARM_BACKEND_STORAGE_ACCOUNT" \
@@ -165,6 +167,7 @@ jobs:
             --account-name $ARM_BACKEND_STORAGE_ACCOUNT \
             --subscription $ARM_SUBSCRIPTION_ID \
             --name $ARM_BACKEND_CONTAINER \
+            --auth-mode login \
             --query exists)
           container_exists="${container_exists%\"}"
           container_exists="${container_exists#\"}"
@@ -172,7 +175,8 @@ jobs:
             az storage container create \
               --subscription "$ARM_SUBSCRIPTION_ID" \
               --name "$ARM_BACKEND_CONTAINER" \
-              --public-access off
+              --public-access off \
+              --auth-mode login
           fi
           terraform init \
             -backend-config="storage_account_name=$ARM_BACKEND_STORAGE_ACCOUNT" \
