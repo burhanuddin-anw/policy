@@ -7,6 +7,7 @@ allowed_resource_types = [
   "Microsoft.Authorization/policyAssignments",
   "Microsoft.Storage/storageAccounts",
   "Microsoft.Network/virtualNetworks",
+  "Microsoft.Network/networkInterfaces",
   "Microsoft.Network/networkSecurityGroups",
   "Microsoft.Compute/virtualMachines",
   "Microsoft.ContainerService/managedClusters",
