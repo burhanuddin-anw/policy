@@ -17,6 +17,7 @@ variable "allowed_resource_types" {
     "Microsoft.Network/networkSecurityGroups",
     "Microsoft.Compute/virtualMachines",
     "Microsoft.ContainerService/managedClusters",
+    "Microsoft.Compute/sshPublicKeys",
     "Microsoft.Sql/servers",
     "Microsoft.Sql/servers/databases",
     "Microsoft.KeyVault/vaults",
