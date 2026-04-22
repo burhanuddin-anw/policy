@@ -200,5 +200,32 @@ resource "azurerm_subscription_policy_assignment" "rm1_governance_assignment" {
       }
       value = var.required_tags
     }
+
+    allowedVmSkus = {
+      type = "Array"
+      metadata = {
+        displayName = "Allowed VM SKUs"
+        description = "The list of allowed VM SKUs to control costs"
+      }
+      value = var.allowed_vm_skus
+    }
+
+    allowedStorageSkus = {
+      type = "Array"
+      metadata = {
+        displayName = "Allowed Storage SKUs"
+        description = "The list of allowed storage account SKUs"
+      }
+      value = var.allowed_storage_skus
+    }
+
+    highCostRegions = {
+      type = "Array"
+      metadata = {
+        displayName = "High-Cost Regions to Restrict"
+        description = "The list of high-cost regions that should be restricted"
+      }
+      value = var.high_cost_regions
+    }
   })
 }
