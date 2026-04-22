@@ -9,6 +9,7 @@ allowed_resource_types = [
   "Microsoft.Network/virtualNetworks",
   "Microsoft.Network/networkSecurityGroups",
   "Microsoft.Compute/virtualMachines",
+  "Microsoft.Compute/sshPublicKeys",
   "Microsoft.ContainerService/managedClusters",
   "Microsoft.Sql/servers",
   "Microsoft.Sql/servers/databases",
