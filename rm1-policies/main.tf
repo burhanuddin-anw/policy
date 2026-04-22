@@ -25,7 +25,7 @@ module "policy_definitions" {
   naming_prefixes        = var.naming_prefixes
   allowed_vm_skus        = var.allowed_vm_skus
   allowed_storage_skus   = var.allowed_storage_skus
-  high_cost_regions     = var.high_cost_regions
+  high_cost_regions      = var.high_cost_regions
 }
 
 # Create the policy set definition (initiative)
