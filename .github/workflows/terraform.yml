@@ -1,0 +1,197 @@
+name: terraform
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      # terraform_action:
+      #   description: Select Terraform Action to perform
+      #   required: true
+      #   default: Apply
+      #   type: choice
+      #   options:
+      #     - Apply
+      VAR_FILE:
+        description: Select Terraform variable file
+        required: true
+        default: vars/dev.tfvars
+        type: choice
+        options:
+          - vars/qa.tfvars
+          - vars/dev.tfvars
+          - vars/demo.tfvars
+      STATE_FILE:
+        description: Select Terraform state file
+        required: true
+        default: dev.tfstate
+        type: choice
+        options:
+          - qa.tfstate
+          - dev.tfstate
+          - demo.tfstate
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  terraform-plan:
+    name: "Terraform Plan Apply"
+    runs-on: ubuntu-latest
+    environment: apply
+    defaults:
+      run:
+        shell: bash
+        working-directory: rm1-policies
+
+    outputs:
+      tf_var_file: ${{ steps.tf_var.outputs.tf_var_file }}
+      tf_state_file: ${{ steps.tf_var.outputs.tf_state_file }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Set default values
+        id: tf_var
+        run: |
+          var_file="${{ github.event.inputs.VAR_FILE }}"
+          echo "tf_var_file=${var_file:-"vars/dev.tfvars"}" >> $GITHUB_OUTPUT
+          state_file="${{ github.event.inputs.STATE_FILE }}"
+          echo "tf_state_file=${state_file:-"dev.tfstate"}" >> $GITHUB_OUTPUT
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_BACKEND_CONTAINER: "terraform-tfstate"
+          ARM_BACKEND_STORAGE_ACCOUNT: "strm1terraformstate"
+          ARM_BACKEND_STORAGE_ACCOUNT_RG: "rg-rm1-terraform-state"
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          container_exists=$(az storage container exists \
+            --account-name $ARM_BACKEND_STORAGE_ACCOUNT \
+            --subscription $ARM_SUBSCRIPTION_ID \
+            --name $ARM_BACKEND_CONTAINER \
+            --auth-mode login \
+            --query exists)
+          container_exists="${container_exists%\"}"
+          container_exists="${container_exists#\"}"
+          if [ "$container_exists" == "false" ]; then
+            az storage container create \
+              --account-name "$ARM_BACKEND_STORAGE_ACCOUNT" \
+              --subscription "$ARM_SUBSCRIPTION_ID" \
+              --name "$ARM_BACKEND_CONTAINER" \
+              --public-access off \
+              --auth-mode login
+          fi
+          terraform init \
+            -backend-config="storage_account_name=$ARM_BACKEND_STORAGE_ACCOUNT" \
+            -backend-config="container_name=$ARM_BACKEND_CONTAINER" \
+            -backend-config="key=rm1/policies/${{ steps.tf_var.outputs.tf_state_file }}" \
+            -backend-config="resource_group_name=$ARM_BACKEND_STORAGE_ACCOUNT_RG" \
+            -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID" \
+            -reconfigure
+
+      - name: Terraform Plan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          terraform plan \
+            -out tfplan.out \
+            -var-file ${{ steps.tf_var.outputs.tf_var_file }} \
+            -input=false
+
+      # ✅ FIX 2: path was wrong — "storage-account" vs "storage_account"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tf-plan
+          path: rm1-policies/tfplan.out
+
+  terraform-apply:
+    needs: [terraform-plan]
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    environment: apply
+    defaults:
+      run:
+        shell: bash
+        working-directory: rm1-policies
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: tf-plan
+          path: /tmp
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_BACKEND_CONTAINER: "terraform-tfstate"
+          ARM_BACKEND_STORAGE_ACCOUNT: "strm1terraformstate"
+          ARM_BACKEND_STORAGE_ACCOUNT_RG: "rg-rm1-terraform-state"
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          container_exists=$(az storage container exists \
+            --account-name $ARM_BACKEND_STORAGE_ACCOUNT \
+            --subscription $ARM_SUBSCRIPTION_ID \
+            --name $ARM_BACKEND_CONTAINER \
+            --auth-mode login \
+            --query exists)
+          container_exists="${container_exists%\"}"
+          container_exists="${container_exists#\"}"
+          if [ "$container_exists" == "false" ]; then
+            az storage container create \
+              --account-name "$ARM_BACKEND_STORAGE_ACCOUNT" \
+              --subscription "$ARM_SUBSCRIPTION_ID" \
+              --name "$ARM_BACKEND_CONTAINER" \
+              --public-access off \
+              --auth-mode login
+          fi
+          terraform init \
+            -backend-config="storage_account_name=$ARM_BACKEND_STORAGE_ACCOUNT" \
+            -backend-config="container_name=$ARM_BACKEND_CONTAINER" \
+            -backend-config="key=rm1/policies/${{ needs.terraform-plan.outputs.tf_state_file }}" \
+            -backend-config="resource_group_name=$ARM_BACKEND_STORAGE_ACCOUNT_RG" \
+            -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID" \
+            -reconfigure
+
+      - name: Terraform Apply
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          terraform apply -auto-approve -input=false /tmp/tfplan.out
