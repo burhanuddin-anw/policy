@@ -43,7 +43,7 @@ resource "azurerm_policy_definition" "allowed_resource_types" {
       notIn = "[parameters('allowedResourceTypes')]"
     }
     then = {
-      effect = "audit"
+      effect = "deny"
     }
   })
   
