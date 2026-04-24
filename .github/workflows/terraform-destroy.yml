@@ -1,0 +1,77 @@
+name: terraform-destroy
+on:
+  workflow_dispatch:
+    inputs:
+      VAR_FILE:
+        description: Select Terraform variable file
+        required: true
+        default: vars/dev.tfvars
+        type: choice
+        options:
+          - vars/dev.tfvars
+          - vars/qa.tfvars
+          - vars/demo.tfvars
+      STATE_FILE:
+        description: Select Terraform state file
+        required: true
+        default: dev.tfstate
+        type: choice
+        options:
+          - dev.tfstate
+          - qa.tfstate
+          - demo.tfstate
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-destroy:
+    name: "Terraform Destroy"
+    runs-on: ubuntu-latest
+    environment: destroy
+    defaults:
+      run:
+        shell: bash
+        working-directory: rm1-policies
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_BACKEND_CONTAINER: "terraform-tfstate"
+          ARM_BACKEND_STORAGE_ACCOUNT: "strm1terraformstate"
+          ARM_BACKEND_STORAGE_ACCOUNT_RG: "rg-rm1-terraform-state"
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          terraform init \
+            -backend-config="storage_account_name=$ARM_BACKEND_STORAGE_ACCOUNT" \
+            -backend-config="container_name=$ARM_BACKEND_CONTAINER" \
+            -backend-config="key=rm1/policies/${{ github.event.inputs.STATE_FILE }}" \
+            -backend-config="resource_group_name=$ARM_BACKEND_STORAGE_ACCOUNT_RG" \
+            -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID" \
+            -reconfigure
+
+      - name: Terraform Destroy
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          terraform destroy \
+            -var-file ${{ github.event.inputs.VAR_FILE }} \
+            -auto-approve

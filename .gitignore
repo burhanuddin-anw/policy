@@ -40,4 +40,8 @@ plan.txt
 
 # Local testing scripts
 scripts/local-*.sh
+<<<<<<< HEAD
 ...
+=======
+----
+>>>>>>> d28a85a03f4a4ba16b9fb6bce2726ab5855c2bb6

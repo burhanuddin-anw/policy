@@ -13,10 +13,13 @@ variable "allowed_resource_types" {
     "Microsoft.Authorization/policySetDefinitions",
     "Microsoft.Authorization/policyAssignments",
     "Microsoft.Storage/storageAccounts",
+    "Microsoft.Storage/storageAccounts/blobServices",
+    "Microsoft.Storage/storageAccounts/fileservices",
     "Microsoft.Network/virtualNetworks",
     "Microsoft.Network/networkSecurityGroups",
     "Microsoft.Compute/virtualMachines",
     "Microsoft.ContainerService/managedClusters",
+    "Microsoft.Compute/sshPublicKeys",
     "Microsoft.Sql/servers",
     "Microsoft.Sql/servers/databases",
     "Microsoft.KeyVault/vaults",
@@ -127,134 +130,6 @@ variable "tag_inheritance_config" {
   }
 }
 
-# Security Policies Configuration
-variable "storage_https_only_config" {
-  description = "Configuration for storage HTTPS only policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-storage-https-only"
-    display_name = "RM1 - Storage HTTPS Only"
-    description  = "Requires HTTPS traffic only for Azure Storage accounts"
-  }
-}
-
-variable "storage_private_endpoints_config" {
-  description = "Configuration for storage private endpoints policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-storage-private-endpoints"
-    display_name = "RM1 - Storage Private Endpoints"
-    description  = "Requires private endpoints for Azure Storage accounts"
-  }
-}
-
-variable "diagnostic_settings_config" {
-  description = "Configuration for diagnostic settings policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-diagnostic-settings"
-    display_name = "RM1 - Diagnostic Settings"
-    description  = "Audits resources for diagnostic settings configuration"
-  }
-}
-
-# Compliance & Regulatory Policies Configuration
-variable "data_encryption_config" {
-  description = "Configuration for data encryption policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-data-encryption"
-    display_name = "RM1 - Data Encryption"
-    description  = "Requires data encryption for storage and SQL databases"
-  }
-}
-
-variable "backup_protection_config" {
-  description = "Configuration for backup protection policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-backup-protection"
-    display_name = "RM1 - Backup Protection"
-    description  = "Audits backup protection for critical resources"
-  }
-}
-
-variable "data_retention_config" {
-  description = "Configuration for data retention policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-data-retention"
-    display_name = "RM1 - Data Retention"
-    description  = "Enforces data retention policies for storage accounts"
-  }
-}
-
-# Networking Policies Configuration
-variable "network_security_groups_config" {
-  description = "Configuration for network security groups policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-network-security-groups"
-    display_name = "RM1 - Network Security Groups"
-    description  = "Requires network security groups for all subnets"
-  }
-}
-
-variable "keyvault_private_endpoints_config" {
-  description = "Configuration for Key Vault private endpoints policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-keyvault-private-endpoints"
-    display_name = "RM1 - Key Vault Private Endpoints"
-    description  = "Requires private endpoints for Key Vault access"
-  }
-}
-
-variable "ddos_protection_config" {
-  description = "Configuration for DDoS protection policy"
-  type = object({
-    name         = string
-    display_name = string
-    description  = string
-  })
-  default = {
-    name         = "rm1-ddos-protection"
-    display_name = "RM1 - DDoS Protection"
-    description  = "Audits DDoS protection for virtual networks"
-  }
-}
 
 # Cost Management Policies Configuration
 variable "allowed_vm_skus_config" {
