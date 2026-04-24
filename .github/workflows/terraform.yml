@@ -119,6 +119,17 @@ jobs:
       - name: Run TFLint
         run: tflint --format=compact
 
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: rm1-policies
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          working_directory: rm1-policies
+          framework: terraform
+
       - name: Terraform Plan
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
