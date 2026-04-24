@@ -267,7 +267,18 @@ resource "azurerm_policy_definition" "allowed_storage_skus" {
       ]
     }
     then = {
-      effect = "deny"
+      effect = "deny"What happens: Blocks specific actions on existing resources
+      User experience: "❌ This action not allowed on this resource"
+      Use case: Prevent deletions, modifications, or specific operations
+      auditIfNotExists
+      What happens: Flags if a related resource doesn't exist
+      User experience: "⚠️ Missing required related resource"
+      Use case: Ensure dependencies exist (like backup on VMs)
+      deployIfNotExists
+      What happens: Automatically creates missing related resources
+      User experience: "✅ Auto-created missing resource"
+      Use case: Deploy required dependencies automatically
+      
     }
   })
   
