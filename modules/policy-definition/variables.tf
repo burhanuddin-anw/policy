@@ -13,6 +13,8 @@ variable "allowed_resource_types" {
     "Microsoft.Authorization/policySetDefinitions",
     "Microsoft.Authorization/policyAssignments",
     "Microsoft.Storage/storageAccounts",
+    "Microsoft.Storage/storageAccounts/blobServices",
+    "Microsoft.Storage/storageAccounts/fileservices",
     "Microsoft.Network/virtualNetworks",
     "Microsoft.Network/networkSecurityGroups",
     "Microsoft.Compute/virtualMachines",
