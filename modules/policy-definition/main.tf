@@ -12,7 +12,7 @@ resource "azurerm_policy_definition" "allowed_locations" {
       notIn = "[parameters('allowedLocations')]"
     }
     then = {
-      effect = "deny"
+      effect = "audit"
     }
   })
   
