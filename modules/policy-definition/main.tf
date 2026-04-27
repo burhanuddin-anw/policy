@@ -173,7 +173,7 @@ resource "azurerm_policy_definition" "tag_inheritance" {
       notEquals = "Microsoft.Resources/subscriptions/resourceGroups"
     }
     then = {
-      effect = "modify"
+      effect = "audit"
       details = {
         roleDefinitionIds = [
           "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
