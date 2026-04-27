@@ -174,33 +174,6 @@ resource "azurerm_policy_definition" "tag_inheritance" {
     }
     then = {
       effect = "audit"
-      details = {
-        roleDefinitionIds = [
-          "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-        ]
-        operations = [
-          {
-            operation = "add"
-            field = "tags['Environment']"
-            value = "[resourcegroup().tags['Environment']]"
-          },
-          {
-            operation = "add"
-            field = "tags['Owner']"
-            value = "[resourcegroup().tags['Owner']]"
-          },
-          {
-            operation = "add"
-            field = "tags['CostCenter']"
-            value = "[resourcegroup().tags['CostCenter']]"
-          },
-          {
-            operation = "add"
-            field = "tags['Project']"
-            value = "[resourcegroup().tags['Project']]"
-          }
-        ]
-      }
     }
   })
 }
